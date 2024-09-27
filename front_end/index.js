@@ -1,7 +1,7 @@
 // Input matrix
 document.getElementById("solve-button").addEventListener("click", execute_operation)
 
-function execute_operation(){
+async function execute_operation(){
     const inputField = document.getElementById("input-text");
     const inputText = inputField.value;
 
@@ -13,7 +13,7 @@ function execute_operation(){
     const operation = selectOperation.value;
 
     if (operation === "multiply") {
-
+        
     } else if (operation === "invert") {
 
     } else {
@@ -22,7 +22,7 @@ function execute_operation(){
 
 }
 
-function multiply(m1, m2) {
+async function multiply(m1, m2) {
     let result = Array.from({ length: m1.length }, () => Array(m2[0].length).fill(0));
 
     for (let i = 0; i < m1.length; i++) {
@@ -36,7 +36,7 @@ function multiply(m1, m2) {
     return result;
 }
 
-function invert(matrix) {
+async function invert(matrix) {
     // TODO: Check every row for the correct amount of values (square matrix)
 
     let n = matrix.length;
@@ -84,4 +84,29 @@ function invert(matrix) {
     let inverse_matrix = augmented_matrix.map(row => row.slice(n));
 
     return inverse_matrix
+}
+
+async function determinant(matrix) {
+    if (matrix.length === 2 && matrix[0].length === 2) {
+        return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+    }
+
+    let det = 0;
+    // Perform Laplace expansion along the first row
+    for (let col = 0; col < matrix.length; col++) {
+        // Get the minor of matrix[0][col]
+        let minor = getMinor(matrix, 0, col);
+        // Calculate the cofactor and accumulate the determinant
+        let cofactor = Math.pow(-1, col) * matrix[0][col] * determinant(minor);
+        det += cofactor;
+    }
+
+    return det;
+}
+
+function getMinor(matrix, row, col) {
+    // Get the minor matrix after removing the specified row and column
+    return matrix
+        .slice(0, row).concat(matrix.slice(row + 1))
+        .map(r => r.slice(0, col).concat(r.slice(col + 1)));
 }
